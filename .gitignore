@@ -1,10 +1,13 @@
+### gradle ###
 HELP.md
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
+gradle.properties
 
+### application data ###
 data/
 
 ### STS ###
@@ -37,3 +40,4 @@ out/
 
 ### VS Code ###
 .vscode/
+
