@@ -18,6 +18,7 @@ class NoteResource(
     fun index(): CollectionModel<EntityModel<Note>> {
         log.info("GET /notes")
         val notes = service.findNotes()
+        log.info("Found ${notes.size} notes")
         return assembler.toCollectionModel(notes)
     }
 

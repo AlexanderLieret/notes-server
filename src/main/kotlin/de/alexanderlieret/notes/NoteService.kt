@@ -2,6 +2,7 @@ package de.alexanderlieret.notes
 
 import org.springframework.data.jdbc.repository.query.Query
 import org.springframework.data.repository.CrudRepository
+import org.springframework.stereotype.Repository
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -16,6 +17,7 @@ class NoteService(val db: NoteRepository) {
     fun delete(id: UUID) = db.deleteById(id)
 }
 
+@Repository
 interface NoteRepository : CrudRepository<Note, UUID> {
     @Query("select * from Notes")
     fun findNotes(): List<Note>
