@@ -13,6 +13,7 @@ class NoteResource(
     val assembler: NoteModelAssembler,
 ) {
     private val log: Logger = LoggerFactory.getLogger(NoteResource::class.java)
+    private fun version(): Long = System.currentTimeMillis() / 1000
 
     @GetMapping("/notes")
     fun index(): CollectionModel<EntityModel<Note>> {
@@ -23,12 +24,13 @@ class NoteResource(
     }
 
     @PostMapping("/notes")
-    fun post(@RequestBody note: Note): EntityModel<Note> {
+    fun post(@RequestBody input: Note): EntityModel<Note> {
+        var note = input
         log.info("POST /notes $note")
 
-        if (note.id?.let { service.get(it).isPresent } == true) note.id = UUID.randomUUID()
+        if (note.id?.let { service.get(it).isPresent } == true) note = note.copy(id = UUID.randomUUID())
 
-        note.version = System.currentTimeMillis() / 1000
+        note = note.copy(version = version())
         service.post(note)
         return assembler.toModel(note)
     }
@@ -42,15 +44,14 @@ class NoteResource(
     }
 
     @PutMapping("/notes/{id}")
-    fun update(@RequestBody updated: Note, @PathVariable id: UUID): EntityModel<Note> {
-        log.info("PUT /notes/$id $updated")
+    fun update(@RequestBody update: Note, @PathVariable id: UUID): EntityModel<Note> {
+        log.info("PUT /notes/$id $update")
 
-        if ((updated.id != null) && (updated.id != id)) throw IdNotMatchException(id, updated)
+        if ((update.id != null) && (update.id != id)) throw IdNotMatchException(id, update)
 
         val note = service.get(id).orElseThrow { NoteNotFoundException(id) }
 
-        updated.id = note.id
-        updated.version = System.currentTimeMillis() / 1000
+        val updated = note.merge(update.copy(version = version()))
         service.post(updated)
         return assembler.toModel(updated)
     }
