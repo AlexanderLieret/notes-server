@@ -7,7 +7,7 @@ import java.util.*
 @Table("Notes")
 data class Note(
     @Id var id: UUID?,
-    var version: String = "0",
+    var version: Long = 0,
     var name: String,
     var content: String,
 )

@@ -13,8 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import java.util.*
 
 @WebMvcTest(NoteResource::class)
@@ -35,9 +34,9 @@ class NoteResourceTest {
     @MockBean
     lateinit var noteModelAssembler: NoteModelAssembler
 
-    private val note1 = Note(UUID.fromString("ffc86e89-eafe-4b3b-bb92-2cf639765c25"), "1", "Test note 1", "lorem ipsum")
-    private val note2 = Note(UUID.fromString("a06e2965-1679-4428-9853-06ef8c3cb24d"), "2", "Test note 2", "lorem ipsum")
-    private val note3 = Note(UUID.fromString("e2821e3a-87f6-47a3-9518-d91a79f742f6"), "3", "Test note 3", "lorem ipsum")
+    private val note1 = Note(UUID.fromString("ffc86e89-eafe-4b3b-bb92-2cf639765c25"), 1, "Test note 1", "lorem ipsum")
+    private val note2 = Note(UUID.fromString("a06e2965-1679-4428-9853-06ef8c3cb24d"), 2, "Test note 2", "lorem ipsum")
+    private val note3 = Note(UUID.fromString("e2821e3a-87f6-47a3-9518-d91a79f742f6"), 3, "Test note 3", "lorem ipsum")
 
     @Test
     fun index_success() {
@@ -78,29 +77,44 @@ class NoteResourceTest {
         )
             .andExpect(status().isNotFound)
             .andExpect { result -> assertTrue(result.resolvedException is NoteNotFoundException) }
-            .andExpect(status().reason(containsString("Could not find note")))
-            .andExpect(jsonPath("$", nullValue()))
+            .andExpect(content().string(containsString("Could not find note")))
     }
 
     @Test
     fun create_success() {
-        val uuid = UUID.randomUUID()
-        val note = Note(uuid, "1634229099", "Test note", "foo bar")
-
         Mockito.`when`(noteService.post(anyNote())).thenAnswer(returnsFirstArg<Note>())
 
         mockMvc.perform(
             MockMvcRequestBuilders.post("/notes")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
-                .content(this.mapper.writeValueAsString(note))
+                .content(this.mapper.writeValueAsString(note2))
         )
             .andExpect(status().isOk)
             .andExpect(jsonPath("$", notNullValue()))
-            .andExpect(jsonPath("$.name", `is`(note.name)))
-            .andExpect(jsonPath("$.content", `is`(note.content)))
-            .andExpect(jsonPath("$.id", `is`(uuid.toString())))
-            .andExpect(jsonPath("$.version", greaterThan(note.version)))
+            .andExpect(jsonPath("$.name", `is`(note2.name)))
+            .andExpect(jsonPath("$.content", `is`(note2.content)))
+            .andExpect(jsonPath("$.id", `is`(note2.id.toString())))
+            .andExpect(jsonPath("$.version", greaterThan(note2.version), Long::class.java))
+    }
+
+    @Test
+    fun create_overwriteProtection() {
+        Mockito.`when`(noteService.get(note3.id!!)).thenReturn(Optional.of(note3))
+        Mockito.`when`(noteService.post(anyNote())).thenAnswer(returnsFirstArg<Note>())
+
+        mockMvc.perform(
+            MockMvcRequestBuilders.post("/notes")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(note3))
+        )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$", notNullValue()))
+            .andExpect(jsonPath("$.name", `is`(note3.name)))
+            .andExpect(jsonPath("$.content", `is`(note3.content)))
+            .andExpect(jsonPath("$.id", not(note3.id.toString())))
+            .andExpect(jsonPath("$.version", greaterThan(note3.version), Long::class.java))
     }
 
     @Test
@@ -121,7 +135,7 @@ class NoteResourceTest {
             .andExpect(jsonPath("$.name", `is`(note.name)))
             .andExpect(jsonPath("$.content", `is`(note.content)))
             .andExpect(jsonPath("$.id", `is`(note.id.toString())))
-            .andExpect(jsonPath("$.version", greaterThan(note.version)))
+            .andExpect(jsonPath("$.version", greaterThan(note.version), Long::class.java))
     }
 
     @Test
@@ -138,8 +152,7 @@ class NoteResourceTest {
         )
             .andExpect(status().isNotFound)
             .andExpect { result -> assertTrue(result.resolvedException is NoteNotFoundException) }
-            .andExpect(status().reason(containsString("Could not find note")))
-            .andExpect(jsonPath("$", nullValue()))
+            .andExpect(content().string(containsString("Could not find note")))
     }
 
     @Test
@@ -158,8 +171,7 @@ class NoteResourceTest {
         )
             .andExpect(status().isBadRequest)
             .andExpect { result -> assertTrue(result.resolvedException is IdNotMatchException) }
-            .andExpect(status().reason(containsString("does not match body id")))
-            .andExpect(jsonPath("$", nullValue()))
+            .andExpect(content().string(containsString("does not match body id")))
     }
 
 
@@ -183,7 +195,6 @@ class NoteResourceTest {
         )
             .andExpect(status().isNotFound)
             .andExpect { result -> assertTrue(result.resolvedException is NoteNotFoundException) }
-            .andExpect(status().reason(containsString("Could not find note")))
-            .andExpect(jsonPath("$", nullValue()))
+            .andExpect(content().string(containsString("Could not find note")))
     }
 }

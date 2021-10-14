@@ -26,7 +26,9 @@ class NoteResource(
     fun post(@RequestBody note: Note): EntityModel<Note> {
         log.info("POST /notes $note")
 
-        note.version = (System.currentTimeMillis() / 1000).toString()
+        if (note.id?.let { service.get(it).isPresent } == true) note.id = UUID.randomUUID()
+
+        note.version = System.currentTimeMillis() / 1000
         service.post(note)
         return assembler.toModel(note)
     }
@@ -48,7 +50,7 @@ class NoteResource(
         val note = service.get(id).orElseThrow { NoteNotFoundException(id) }
 
         updated.id = note.id
-        updated.version = (System.currentTimeMillis() / 1000).toString()
+        updated.version = System.currentTimeMillis() / 1000
         service.post(updated)
         return assembler.toModel(updated)
     }
@@ -56,6 +58,8 @@ class NoteResource(
     @DeleteMapping("/notes/{id}")
     fun delete(@PathVariable id: UUID) {
         log.info("DELETE /notes/$id")
-        service.delete(id)
+
+        val note = service.get(id).orElseThrow { NoteNotFoundException(id) }
+        note.id?.let { service.delete(it) }
     }
 }

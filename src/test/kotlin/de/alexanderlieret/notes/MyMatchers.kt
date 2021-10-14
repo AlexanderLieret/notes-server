@@ -7,7 +7,7 @@ import java.util.*
 object MyMatchers : ArgumentMatchers() {
     fun anyNote(): Note {
         argThat(MyMatcher<Note>())
-        return Note(null, "", "", "")
+        return Note(null, 0, "", "")
     }
 
     fun anyUUID(): UUID {
