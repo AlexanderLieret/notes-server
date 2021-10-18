@@ -1,7 +1,7 @@
-package de.alexanderlieret.notes
+package de.alexanderlieret.notes.server
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import de.alexanderlieret.notes.MyMatchers.anyNote
+import de.alexanderlieret.notes.server.MyMatchers.anyNote
 import org.hamcrest.Matchers.*
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -10,7 +10,6 @@ import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
@@ -86,8 +85,8 @@ class NoteResourceTest {
 
         mockMvc.perform(
             MockMvcRequestBuilders.post("/notes")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
+                .contentType("application/hal+json")
+                .accept("application/hal+json")
                 .content(this.mapper.writeValueAsString(note2))
         )
             .andExpect(status().isOk)
@@ -105,8 +104,8 @@ class NoteResourceTest {
 
         mockMvc.perform(
             MockMvcRequestBuilders.post("/notes")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
+                .contentType("application/hal+json")
+                .accept("application/hal+json")
                 .content(this.mapper.writeValueAsString(note3))
         )
             .andExpect(status().isOk)
@@ -126,8 +125,8 @@ class NoteResourceTest {
 
         mockMvc.perform(
             MockMvcRequestBuilders.put("/notes/${note.id}")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
+                .contentType("application/hal+json")
+                .accept("application/hal+json")
                 .content(this.mapper.writeValueAsString(note))
         )
             .andExpect(status().isOk)
@@ -146,8 +145,8 @@ class NoteResourceTest {
 
         mockMvc.perform(
             MockMvcRequestBuilders.put("/notes/${note.id}")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
+                .contentType("application/hal+json")
+                .accept("application/hal+json")
                 .content(this.mapper.writeValueAsString(note))
         )
             .andExpect(status().isNotFound)
@@ -165,8 +164,8 @@ class NoteResourceTest {
 
         mockMvc.perform(
             MockMvcRequestBuilders.put("/notes/${note3.id}")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
+                .contentType("application/hal+json")
+                .accept("application/hal+json")
                 .content(this.mapper.writeValueAsString(note))
         )
             .andExpect(status().isBadRequest)
@@ -181,7 +180,7 @@ class NoteResourceTest {
 
         mockMvc.perform(
             MockMvcRequestBuilders.delete("/notes/${note2.id}")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType("application/hal+json")
         )
             .andExpect(status().isOk)
             .andExpect(jsonPath("$").doesNotExist())
@@ -191,7 +190,7 @@ class NoteResourceTest {
     fun delete_noteNotFound() {
         mockMvc.perform(
             MockMvcRequestBuilders.delete("/notes/${UUID.randomUUID()}")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType("application/hal+json")
         )
             .andExpect(status().isNotFound)
             .andExpect { result -> assertTrue(result.resolvedException is NoteNotFoundException) }

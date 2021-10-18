@@ -1,4 +1,4 @@
-package de.alexanderlieret.notes
+package de.alexanderlieret.notes.server
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Table

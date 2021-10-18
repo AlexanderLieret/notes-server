@@ -1,4 +1,4 @@
-package de.alexanderlieret.notes
+package de.alexanderlieret.notes.server
 
 import org.springframework.hateoas.CollectionModel
 import org.springframework.hateoas.EntityModel

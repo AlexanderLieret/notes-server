@@ -1,4 +1,4 @@
-package de.alexanderlieret.notes
+package de.alexanderlieret.notes.server
 
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ControllerAdvice

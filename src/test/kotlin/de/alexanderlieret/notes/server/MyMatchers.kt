@@ -1,4 +1,4 @@
-package de.alexanderlieret.notes
+package de.alexanderlieret.notes.server
 
 import org.mockito.ArgumentMatcher
 import org.mockito.ArgumentMatchers

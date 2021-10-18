@@ -1,4 +1,4 @@
-package de.alexanderlieret.notes
+package de.alexanderlieret.notes.server
 
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
