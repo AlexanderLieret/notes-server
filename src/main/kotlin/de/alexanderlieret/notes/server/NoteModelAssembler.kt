@@ -6,6 +6,7 @@ import org.springframework.hateoas.server.RepresentationModelAssembler
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn
 import org.springframework.stereotype.Component
+import java.util.*
 
 @Component
 class NoteModelAssembler :
@@ -13,7 +14,7 @@ class NoteModelAssembler :
     final override fun toModel(note: Note): EntityModel<Note> {
         return EntityModel.of(
             note,
-            linkTo(methodOn(NoteResource::class.java).get(note.id!!)).withSelfRel(),
+            linkTo(methodOn(NoteResource::class.java).get(note.id ?: UUID(0, 0))).withSelfRel(),
             linkTo(methodOn(NoteResource::class.java).index()).withRel("notes"),
         )
     }

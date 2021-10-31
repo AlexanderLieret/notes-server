@@ -30,15 +30,11 @@ class NoteResource(
         var note = input
         log.info("POST /notes $note")
 
-        // if the note id is already in use, then generate a new id
-        if (note.id?.let { service.get(it).isPresent } == true) note = note.copy(id = UUID.randomUUID())
-
-        // update version
-        note = note.copy(version = version())
+        // update version and remove id
+        note = note.copy(id = null, version = version())
         log.debug("new note $note")
 
-        service.post(note)
-        return assembler.toModel(note)
+        return assembler.toModel(service.post(note))
     }
 
     @GetMapping("/notes/{id}")
@@ -66,8 +62,7 @@ class NoteResource(
         val updated = note.merge(update.copy(version = version()))
         log.debug("merged version $updated")
 
-        service.post(updated)
-        return assembler.toModel(updated)
+        return assembler.toModel(service.post(updated))
     }
 
     @DeleteMapping("/notes/{id}")

@@ -9,7 +9,7 @@ plugins {
     kotlin("plugin.allopen") version "1.5.31"
 }
 
-group = "de.alexanderlieret"
+group = "de.alexanderlieret.notes"
 version = "0.0.1-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_11
 

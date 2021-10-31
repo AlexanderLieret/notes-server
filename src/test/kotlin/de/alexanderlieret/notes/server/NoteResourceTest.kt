@@ -93,27 +93,7 @@ class NoteResourceTest {
             .andExpect(jsonPath("$", notNullValue()))
             .andExpect(jsonPath("$.name", `is`(note2.name)))
             .andExpect(jsonPath("$.content", `is`(note2.content)))
-            .andExpect(jsonPath("$.id", `is`(note2.id.toString())))
             .andExpect(jsonPath("$.version", greaterThan(note2.version), Long::class.java))
-    }
-
-    @Test
-    fun create_overwriteProtection() {
-        Mockito.`when`(noteService.get(note3.id!!)).thenReturn(Optional.of(note3))
-        Mockito.`when`(noteService.post(anyNote())).thenAnswer(returnsFirstArg<Note>())
-
-        mockMvc.perform(
-            MockMvcRequestBuilders.post("/notes")
-                .contentType("application/hal+json")
-                .accept("application/hal+json")
-                .content(this.mapper.writeValueAsString(note3))
-        )
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$", notNullValue()))
-            .andExpect(jsonPath("$.name", `is`(note3.name)))
-            .andExpect(jsonPath("$.content", `is`(note3.content)))
-            .andExpect(jsonPath("$.id", not(note3.id.toString())))
-            .andExpect(jsonPath("$.version", greaterThan(note3.version), Long::class.java))
     }
 
     @Test

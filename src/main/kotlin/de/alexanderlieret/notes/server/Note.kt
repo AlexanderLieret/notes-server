@@ -14,7 +14,7 @@ data class Note(
 ) {
     infix fun merge(note: Note): Note =
         Note(
-            id = if (note.id != null) note.id else id,
+            id = note.id ?: id,
             version = max(note.version, version),
             name = note.name.ifBlank { name },
             content = note.content.ifBlank { content }
@@ -24,3 +24,5 @@ data class Note(
         fun merge(a: Note, b: Note) = a.merge(b)
     }
 }
+
+fun emptyNote() = Note(null, 0,"", "")

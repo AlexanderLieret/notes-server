@@ -19,6 +19,6 @@ class NoteService(val db: NoteRepository) {
 
 @Repository
 interface NoteRepository : CrudRepository<Note, UUID> {
-    @Query("select * from Notes")
+    @Query("SELECT * FROM Notes ORDER BY id")
     fun findNotes(): List<Note>
 }
