@@ -7,6 +7,7 @@ plugins {
     kotlin("jvm") version "1.5.31"
     kotlin("plugin.spring") version "1.5.31"
     kotlin("plugin.allopen") version "1.5.31"
+    application
 }
 
 group = "de.alexanderlieret.notes"
@@ -43,4 +44,8 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+application {
+    mainClass.set("de.alexanderlieret.notes.server.NotesApplicationKt")
 }
